@@ -14,10 +14,10 @@ d3.json("JS/Tree.json", function(json) {
         .children(function(d) { 
             return d.parents; 
         })
-        .size([height+500, width]);
+        .size([height+1500, width]);
     
     var zoom = d3.behavior.zoom()
-        .scaleExtent([1, 10])
+        .scaleExtent([-2, 10])
         .on("zoom", zoomed);
     
     var drag = d3.behavior.drag()
