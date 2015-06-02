@@ -2,17 +2,19 @@
 
 d3.json("JS/Tree.json", function(json) {
     
-    var margin = {top: 0, right: 320, bottom: 0, left: 0},
+    var margin = {top: 0, right: 0, bottom: 0, left: 0},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
     
 
     var tree = d3.layout.tree()
-        .separation(function(a, b) { return a.parent === b.parent ? 1 : .5; })
+        .separation(function(a, b) { 
+            return a.parent === b.parent ? 1 : .5; 
+        })
         .children(function(d) { 
             return d.parents; 
         })
-        .size([height, width]);
+        .size([height+500, width]);
     
     var zoom = d3.behavior.zoom()
         .scaleExtent([1, 10])
@@ -35,6 +37,12 @@ d3.json("JS/Tree.json", function(json) {
     
     var nodes = tree.nodes(json);
     console.log(json);
+    
+    //
+    
+    var fontScale = d3.scale.linear()
+        .domain([0, 7])
+        .range([15,5]);
 
     var link = container.selectAll(".link")
         .data(tree.links(nodes))
@@ -46,7 +54,8 @@ d3.json("JS/Tree.json", function(json) {
         .data(nodes)
         .enter().append("g")
         .attr("class", "node")
-        .attr("transform", function(d) { 
+        .attr("transform", function(d) {
+            console.log("x: "+d.x+" y: "+d.y+" depth: "+d.depth);
             return "translate(" + d.y + "," + d.x + ")"; 
         })
 
@@ -54,6 +63,7 @@ d3.json("JS/Tree.json", function(json) {
         .attr("class", "name")
         .attr("x", 8)
         .attr("y", -6)
+        .attr("font-size", function(d){return fontScale(d.depth)+"px"})
         .text(function(d) { 
             return d.name; 
         });
@@ -65,7 +75,7 @@ d3.json("JS/Tree.json", function(json) {
         .attr("class", "about lifespan")
         .text(function(d) { 
             return d.born + "–" + d.died; 
-        });*/
+        });
 
     node.append("text")
         .attr("x", 8)
@@ -75,6 +85,8 @@ d3.json("JS/Tree.json", function(json) {
         .text(function(d) { 
             return d.location; 
         });
+    */
+    //
     
     function elbow(d, i) {
         return "M" + d.source.y + "," + d.source.x
