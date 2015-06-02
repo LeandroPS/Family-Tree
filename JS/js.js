@@ -58,19 +58,19 @@ d3.json("JS/Tree.json", function(json) {
             return d.name; 
         });
 
-    node.append("text")
+    /*node.append("text")
         .attr("x", 8)
         .attr("y", 8)
         .attr("dy", ".71em")
         .attr("class", "about lifespan")
         .text(function(d) { 
             return d.born + "–" + d.died; 
-        });
+        });*/
 
     node.append("text")
         .attr("x", 8)
         .attr("y", 8)
-        .attr("dy", "1.86em")
+        //.attr("dy", "1.86em")
         .attr("class", "about location")
         .text(function(d) { 
             return d.location; 
