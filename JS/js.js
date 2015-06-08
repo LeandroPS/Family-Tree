@@ -16,7 +16,6 @@ d3.json("JS/Tree.json", function(json) {
             maxdepth = d.depth;
         }
     }
-    
 
     var tree = d3.layout.tree()
         .separation(function(a, b) { 
@@ -45,9 +44,118 @@ d3.json("JS/Tree.json", function(json) {
     var container = svg.append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    function click(d) {
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
+      } else {
+        d.children = d._children;
+        d._children = null;
+      }
+      update();
+    }
+    
+    function flatten(root) {
+      var nodes = [], i = 0;
+
+      function recurse(node) {
+        if (node.children) node.children.forEach(recurse);
+        if (!node.id) node.id = ++i;
+        nodes.push(node);
+      }
+
+      recurse(root);
+      return nodes;
+    }
+    
+    function update() {
+      var nodes = flatten(json ),
+          links = d3.layout.tree().links(nodes);
+
+      // Restart the force layout.
+      /*force
+          .nodes(nodes)
+          .links(links)
+          .start();*/
+        
+        tree.nodes(nodes);
+        
+        var node = container.selectAll(".node")
+        .data(nodes)
+        .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) {
+            counter(d);
+           // console.log("x: "+d.x+" y: "+d.y+" depth: "+d.depth);
+            return "translate(" + d.y + "," + d.x + ")"; 
+        })
+
+        node.append("text")
+            .attr("class", "name")
+            .attr("x", 4)
+            .attr("y", function(d){return spaceScale(d.depth)})
+            .attr("font-size", function(d){return fontScale(d.depth)+"px"})
+            .text(function(d) { 
+                return d.name; 
+            });
+
+        node.append("svg:circle")
+            .attr("class", "node")
+            .attr("cx", "0")
+            .attr("cy", "0")
+            //.attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+            .attr("r", "10")
+            .style("fill", "black")
+            .on("click", click);
+    
+      // Update the links…
+      link = svg.selectAll(".link")
+          .data(links, function(d) { return d.target.id; });
+
+      // Enter any new links.
+      link.enter().append("svg:path", ".node")
+          .attr("class", "link")
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+    /*var link = container.selectAll(".link")
+        .data(tree.links(nodes))
+    *var slink = link
+        .enter().append("path")
+        .attr("class", "link")
+        .style("stroke", "grey")
+        .style("stroke-width", "3px")
+        .attr("d", diagonal);*/
+
+      // Exit any old links.
+      link.exit().remove();
+
+      // Update the nodes…
+      node = svg.selectAll("circle.node")
+          .data(nodes, function(d) { return d.id; })
+          .style("fill", "black");
+
+      // Enter any new nodes.
+      node.enter().append("svg:circle")
+          .attr("class", "node")
+          .attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; })
+          .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+          .style("fill", "black")
+          .on("click", click);
+          //.call(force.drag);*/
+
+      // Exit any old nodes.
+      node.exit().remove();
+    }
+    
+    
+    
     
     var nodes = tree.nodes(json);
     //console.log(json);
+
     
     //
     
@@ -58,12 +166,19 @@ d3.json("JS/Tree.json", function(json) {
     var spaceScale = d3.scale.linear()
         .domain([0, 12])
         .range([-6, -1]);
-
+    
+    var diagonal = d3.svg.diagonal()
+      // change x and y (for the left to right tree)
+      .projection(function(d) { return [d.y, d.x]; });
+    
+    update();
+    
+/*
     var link = container.selectAll(".link")
         .data(tree.links(nodes))
         .enter().append("path")
         .attr("class", "link")
-        .attr("d", elbow);
+        .attr("d", diagonal);
 
     var node = container.selectAll(".node")
         .data(nodes)
@@ -71,7 +186,7 @@ d3.json("JS/Tree.json", function(json) {
         .attr("class", "node")
         .attr("transform", function(d) {
             counter(d);
-            console.log("x: "+d.x+" y: "+d.y+" depth: "+d.depth);
+           // console.log("x: "+d.x+" y: "+d.y+" depth: "+d.depth);
             return "translate(" + d.y + "," + d.x + ")"; 
         })
 
@@ -83,6 +198,15 @@ d3.json("JS/Tree.json", function(json) {
         .text(function(d) { 
             return d.name; 
         });
+    
+    node.append("svg:circle")
+        .attr("class", "node")
+        .attr("cx", "0")
+        .attr("cy", "0")
+        //.attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+        .attr("r", "10")
+        .style("fill", "black")
+        .on("click", click);
 
     /*node.append("text")
         .attr("x", 8)
