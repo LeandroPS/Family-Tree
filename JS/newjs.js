@@ -1,6 +1,7 @@
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
     width = 960 - margin.right - margin.left,
-    height = 800 - margin.top - margin.bottom;
+    //height = 800 - margin.top - margin.bottom;
+    height = 450 - margin.top - margin.bottom;
     
 var i = 0,
     duration = 750,
@@ -8,8 +9,7 @@ var i = 0,
 
 var tree = d3.layout.tree()
         .size([height, width]);
-/*
-    var zoom = d3.behavior.zoom()
+/*  var zoom = d3.behavior.zoom()
         .scaleExtent([-2, 10])
         .on("zoom", zoomed);*/
     
@@ -23,12 +23,12 @@ var tree = d3.layout.tree()
     var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
 
-    // Toggle children on click.
+    //Toggle children on click.
 
 
 d3.json("JS/Tree.json", function(flare, error) {
     
-    svg = d3.select("body").append("svg")
+    svg = d3.select("body div.panel svg")//.append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);//.call(zoom);
     
@@ -90,12 +90,8 @@ d3.json("JS/Tree.json", function(flare, error) {
       d3.select(this).classed("dragging", false);
     }
 
-
-
     function update(source) {
         
- 
-
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
           links = tree.links(nodes);
@@ -131,7 +127,8 @@ d3.json("JS/Tree.json", function(flare, error) {
           .attr("dy", ".35em")
           .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
           .text(function(d) { return d.name; })
-          .style("fill-opacity", 1e-6);
+          .style("fill-opacity", 1e-6)
+          .style("cursor", "pointer");
 
         // Transition nodes to their new position.
         var nodeUpdate = node.transition()
@@ -191,14 +188,15 @@ d3.json("JS/Tree.json", function(flare, error) {
     }
 
     function click(d) {
-
+        console.log(d.y);
         g = d3.select("svg g");
         if (d.children) {
             d._children = d.children;
             d.children = null;
             //g._x = parseInt(g.attr("x"))+180;
-            g._x = d.depth*(-180) + 180;
-            g.transition().attr("transform","translate("+g._x+",0)");//.attr("x", g._x);
+            //g._x = d.depth*(-180) + 180;
+            g._x = (d.depth*(-180))+180
+            g.transition().attr("transform","translate("+g._x+","+0+") scale("+1+")");//.attr("x", g._x);
             
             
         } else if (d._children!=null){
@@ -206,7 +204,8 @@ d3.json("JS/Tree.json", function(flare, error) {
             d._children = null;
             //g._x = parseInt(g.attr("x"))-180;
             g._x = d.depth*(-180) ;
-            g.transition().attr("transform","translate("+g._x+",0)");//.attr("x", g._x);
+            //g._x = 0;
+            g.transition().attr("transform","translate("+(g._x)+","+0+") scale("+/*(d.depth*0.5+1)*/1+")");//.attr("x", g._x);
         }
         update(d);
     }
