@@ -11,13 +11,13 @@ var tree = d3.layout.tree()
         .size([height, width]);
 /*  var zoom = d3.behavior.zoom()
         .scaleExtent([-2, 10])
-        .on("zoom", zoomed);*/
+        .on("zoom", zoomed);
     
     var drag = d3.behavior.drag()
         .origin(function(d) { return d; })
         .on("dragstart", dragstarted)
         .on("drag", dragged)
-        .on("dragend", dragended);
+        .on("dragend", dragended);*/
 
     var svg;
     var diagonal = d3.svg.diagonal()
@@ -26,7 +26,85 @@ var tree = d3.layout.tree()
     //Toggle children on click.
 
 
-d3.json("JS/Tree.json", function(flare, error) {
+coun = 0;
+
+function counter(){
+    coun++;
+}
+
+$data = jQuery("<div></div>");
+
+org = [];
+
+$data.load("orgChart.html", function(){
+    console.log($data);
+    //console.log("hey");
+    $data.find("a").remove();
+    $data.children("div").children("ul").children("li").each(function(d, e){
+        ob = {};
+        ob.name = $(e).text().trim();
+        //$(e).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; })[1].data;
+        ob.children = [];
+        //console.log($(e).text().trim());
+        $(e).children("ul").children("li").each(function(i, el){
+            //console.log($(el).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; }));
+            //console.log($(el).text());
+            obj = {};
+            //obj.text = $(el).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; })[0].data;
+            obj.name = $(el).text().trim();
+            obj.children = [];
+            
+            $(el).children("ul").children("li").each(function(i, ele){
+                obje = {};
+                //obj.text = $(el).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; })[0].data;
+                obje.name = $(ele).text().trim();
+                obje.children = [];
+                
+                $(ele).children("ul").children("li").each(function(i, elem){
+                    objec = {};
+                    objec.name = $(elem).text().trim();
+                    objec.children = [];
+                    
+                    $(elem).children("ul").children("li").each(function(i, eleme){
+                        object = {};
+                        object.name = $(eleme).text().trim();
+                        object.children = [];
+                        
+                        $(eleme).children("ul").children("li").each(function(i, elemen){
+                            objects = {};
+                            objects.name = $(elemen).text().trim();
+                            objects.children = [];
+                            
+                            object.children.push(objects);
+                            counter();
+                        });
+                        
+                        objec.children.push(object);
+                        counter();
+                    });
+                    
+                    
+                    obje.children.push(objec);
+                    counter();
+                });
+                
+                obj.children.push(obje);
+                counter();
+            });
+            
+            ob.children.push(obj);
+            counter();
+        });
+        
+        
+        org.push(ob);
+        counter();
+    });
+
+console.log(org);
+
+//d3.json(/*"JS/Tree.json"*/org[0], function(flare, error) {
+    flare = org[0];
     
     svg = d3.select("body div.panel svg")//.append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -51,7 +129,7 @@ d3.json("JS/Tree.json", function(flare, error) {
     
     
     
-    console.log(error);
+    //console.log(error);
     console.log(flare);
     root = flare;
     root.x0 = height / 2;
@@ -67,7 +145,7 @@ d3.json("JS/Tree.json", function(flare, error) {
 
     root.children.forEach(collapse);
     update(root);
-    });
+//});
 
     d3.select(self.frameElement).style("height", "800px");
 
@@ -126,7 +204,7 @@ d3.json("JS/Tree.json", function(flare, error) {
           .attr("x", function(d) { return d.children || d._children ? 10 : -10; })
           .attr("dy", ".35em")
           .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-          .text(function(d) { return d.name; })
+          .text(function(d) { return d.name.split(",")[0]; })
           .style("fill-opacity", 1e-6)
           .style("cursor", "pointer");
 
@@ -209,3 +287,5 @@ d3.json("JS/Tree.json", function(flare, error) {
         }
         update(d);
     }
+    
+});
