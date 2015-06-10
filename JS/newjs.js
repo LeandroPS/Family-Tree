@@ -9,6 +9,7 @@ var i = 0,
 
 var tree = d3.layout.tree()
         .size([height, width]);
+
 /*  var zoom = d3.behavior.zoom()
         .scaleExtent([-2, 10])
         .on("zoom", zoomed);
@@ -280,7 +281,9 @@ console.log(org);
 
         nodeUpdate.select("circle")
           .attr("r", 4.5)
-          .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+          .style("fill", function(d) { return d._children ? "#9E9E9E" : "#fff"; })
+            .style("stroke", "#9E9E9E")
+            .style("stroke-width", 2);
 
         nodeUpdate.select("text")
           .style("fill-opacity", 1);
@@ -305,7 +308,7 @@ console.log(org);
         link.enter().insert("path", "g")
           .attr("class", "link")
           .attr("d", function(d) {
-            var o = {x: source.x0, y: source.y0};
+            var o = {x: source.x0+50, y: source.y0};
             return diagonal({source: o, target: o});
           });
 
@@ -318,7 +321,7 @@ console.log(org);
         link.exit().transition()
           .duration(duration)
           .attr("d", function(d) {
-            var o = {x: source.x, y: source.y};
+            var o = {x: source.x+50, y: source.y};
             return diagonal({source: o, target: o});
           })
           .remove();

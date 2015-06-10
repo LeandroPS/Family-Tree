@@ -38,6 +38,7 @@ text {
 
 .link {
   fill: none;
-  stroke: #000;
+  stroke: #E0E0E0;
+    stroke-width: 2px;
   shape-rendering: crispEdges;
 }
