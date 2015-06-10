@@ -308,7 +308,7 @@ console.log(org);
         link.enter().insert("path", "g")
           .attr("class", "link")
           .attr("d", function(d) {
-            var o = {x: source.x0+50, y: source.y0};
+            var o = {x: source.x0, y: source.y0};
             return diagonal({source: o, target: o});
           });
 
@@ -321,7 +321,7 @@ console.log(org);
         link.exit().transition()
           .duration(duration)
           .attr("d", function(d) {
-            var o = {x: source.x+50, y: source.y};
+            var o = {x: source.x, y: source.y};
             return diagonal({source: o, target: o});
           })
           .remove();
