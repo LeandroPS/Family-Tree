@@ -1,7 +1,7 @@
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
     width = 960 - margin.right - margin.left,
     //height = 800 - margin.top - margin.bottom;
-    height = 450 - margin.top - margin.bottom;
+    height = 550 - margin.top - margin.bottom;
     
 var i = 0,
     duration = 750,
@@ -74,6 +74,33 @@ $data.load("orgChart.html", function(){
                             objects = {};
                             objects.name = $(elemen).text().trim();
                             objects.children = [];
+                            
+                            $(elemen).children("ul").children("li").each(function(i, element){
+                                objectss = {};
+                                objectss.name = $(element).text().trim();
+                                objectss.children = [];
+                                
+                                $(element).children("ul").children("li").each(function(i, elements){
+                                    objectsss = {};
+                                    objectsss.name = $(elements).text().trim();
+                                    objectsss.children = [];
+                                    
+                                    $(elements).children("ul").children("li").each(function(i, elementss){
+                                        objectssss = {};
+                                        objectssss.name = $(elementss).text().trim();
+                                        objectssss.children = [];
+                                        
+                                        objectsss.children.push(objectssss);
+                                        counter();
+                                    });
+                                    
+                                    objectss.children.push(objectsss);
+                                    counter();
+                                });
+                                
+                                objects.children.push(objectss);
+                                counter();
+                            });
                             
                             object.children.push(objects);
                             counter();
@@ -176,7 +203,7 @@ console.log(org);
 
         // Normalize for fixed-depth.
         nodes.forEach(function(d) { 
-            d.y = d.depth * 180 +200; 
+            d.y = d.depth * 300 +200; 
             d.x = d.x;
         });
 
@@ -201,11 +228,49 @@ console.log(org);
             });
 
         nodeEnter.append("text")
-          .attr("x", function(d) { return d.children || d._children ? 10 : -10; })
+          .attr("x", function(d) { 
+              //return d.children || d._children ? 10 : -10;
+              if(d.children!=null){
+                  return -10;
+              }else{
+                  return 10;
+              }
+          })
           .attr("dy", ".35em")
-          .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+          .attr("text-anchor", function(d) { 
+            //return d.children || d._children ? "end" : "start";
+            if(d.children!=null){
+                return "end";
+            }else{
+                return "start";
+            }
+          })
           .text(function(d) { return d.name.split(",")[0]; })
           .style("fill-opacity", 1e-6)
+          .style("cursor", "pointer");
+        
+        nodeEnter.append("text")
+          .attr("x", function(d) { 
+              //return d.children || d._children ? 10 : -10;
+              if(d.children!=null){
+                  return -10;
+              }else{
+                  return 10;
+              }
+          })
+          .attr("dy", "1.35em")
+          .attr("text-anchor", function(d) { 
+            //return d.children || d._children ? "end" : "start";
+            if(d.children!=null){
+                return "end";
+            }else{
+                return "start";
+            }
+          })
+          .text(function(d) { return d.name.split(/,| - /)[1]; })
+          .style("fill-opacity", 1)
+          .style("font-size", "10pt")
+          .style("fill", "grey")
           .style("cursor", "pointer");
 
         // Transition nodes to their new position.
@@ -266,14 +331,14 @@ console.log(org);
     }
 
     function click(d) {
-        console.log(d.y);
+        //console.log(d.y);
         g = d3.select("svg g");
         if (d.children) {
             d._children = d.children;
             d.children = null;
             //g._x = parseInt(g.attr("x"))+180;
             //g._x = d.depth*(-180) + 180;
-            g._x = (d.depth*(-180))+180
+            g._x = (d.depth*(-300))+300
             g.transition().attr("transform","translate("+g._x+","+0+") scale("+1+")");//.attr("x", g._x);
             
             
@@ -281,7 +346,7 @@ console.log(org);
             d.children = d._children;
             d._children = null;
             //g._x = parseInt(g.attr("x"))-180;
-            g._x = d.depth*(-180) ;
+            g._x = d.depth*(-300) ;
             //g._x = 0;
             g.transition().attr("transform","translate("+(g._x)+","+0+") scale("+/*(d.depth*0.5+1)*/1+")");//.attr("x", g._x);
         }
