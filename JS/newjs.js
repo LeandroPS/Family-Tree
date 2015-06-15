@@ -114,7 +114,7 @@ function search(str){
                         
                         for(var f = 0; f < chil.length; f++){
                             counterSearch();
-                            if(child[e].name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
+                            if(chil[f].name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
                                 ob = {};
                                 ob.name = chil[f].name.split(",")[0];
                                 ob.title = chil[f].name.split(/,| - /)[1].trim();
@@ -170,6 +170,7 @@ $data.load("orgChart.html", function(){
     $("button.search").click(function(){
         $("div.search, button.search").toggleClass("expanded");
         $("button.search span").toggleClass("fa-search fa-times");
+        //$("input.search").delay(1000).focus();
     });
     
     $("input.search").keyup(function(){
@@ -180,6 +181,8 @@ $data.load("orgChart.html", function(){
             for(i = 0; i<res.length; i++){
                 $("div.search ul").append("<li><span class='name'>"+res[i].name+"</span><span class='title'>"+res[i].title+"</span></li>");
             }
+        }else{
+            $("div.search ul").empty();
         }
     });
     
@@ -192,14 +195,10 @@ $data.load("orgChart.html", function(){
         ob.name = $(e).text().trim();
         hierarchy[0] = ob.name;
         ob.hierarchy = hierarchy.slice(0,1);
-        //$(e).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; })[1].data;
         ob.children = [];
-        //console.log($(e).text().trim());
+        //ob.id
         $(e).children("ul").children("li").each(function(i, el){
-            //console.log($(el).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; }));
-            //console.log($(el).text());
             obj = {};
-            //obj.text = $(el).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; })[0].data;
             obj.name = $(el).text().trim();
             obj.children = [];
             hierarchy[1] = obj.name;
@@ -207,7 +206,6 @@ $data.load("orgChart.html", function(){
             
             $(el).children("ul").children("li").each(function(i, ele){
                 obje = {};
-                //obj.text = $(el).contents().filter(function() { return this.nodeType == Node.TEXT_NODE; })[0].data;
                 obje.name = $(ele).text().trim();
                 obje.children = [];
                 hierarchy[2] = obje.name;
@@ -275,7 +273,6 @@ $data.load("orgChart.html", function(){
                         counter();
                     });
                     
-                    
                     obje.children.push(objec);
                     counter();
                 });
@@ -287,7 +284,6 @@ $data.load("orgChart.html", function(){
             ob.children.push(obj);
             counter();
         });
-        
         
         org.push(ob);
         counter();

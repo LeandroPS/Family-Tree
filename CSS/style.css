@@ -87,6 +87,7 @@ div.panel{
     div.panel div.hierarchy{
         float: right;
         margin-right: 8px;
+        height: 22px;
     }
         
         div.panel div.hierarchy span.text{
@@ -112,8 +113,16 @@ div.panel{
         background-color: transparent;
         outline: none;
         cursor: pointer;
-        color: rgb(158,158,158);
+        color: #DDD;
+        
+        width: 55px;
+        height: 55px;
+        padding: 0px;
     }
+
+        button.search:hover{
+            color: #CCC;
+        }
 
 text {
   font-family: "Helvetica Neue", Helvetica, sans-serif;
