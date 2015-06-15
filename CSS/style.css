@@ -55,7 +55,8 @@ div.panel{
         div.panel div.search ul{
             padding: 0px;
             margin: 0px;
-            /*overflow-y: scroll;*/
+            overflow-y: scroll;
+            height: calc(100% - 55px);
         }
 
             div.panel div.search ul li{
