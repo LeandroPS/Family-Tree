@@ -11,6 +11,16 @@ function updateHierarchy(hi){
     }
 }
 */
+
+jQuery.fn.d3Click = function () {
+  this.each(function (i, e) {
+    var evt = document.createEvent("MouseEvents");
+    evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+    e.dispatchEvent(evt);
+  });
+};
+
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
     width = 960 - margin.right - margin.left,
     //height = 800 - margin.top - margin.bottom;
@@ -45,6 +55,7 @@ csearch = 0;
 
 function counter(){
     coun++;
+    return coun;
 }
 
 function counterSearch(){
@@ -63,6 +74,7 @@ function search(str){
             ob = {};
             ob.name = org[a].name.split(",")[0];
             ob.title = org[a].name.split(/,| - /)[1].trim();
+            ob.hierarchyId = org[a].hierarchyId;
             result.push(ob);
         }
         
@@ -74,6 +86,7 @@ function search(str){
                 ob = {};
                 ob.name = children[b].name.split(",")[0];
                 ob.title = children[b].name.split(/,| - /)[1].trim();
+                ob.hierarchyId = children[b].hierarchyId;
                 result.push(ob);
             }
             //console.log(children[b]);
@@ -85,6 +98,7 @@ function search(str){
                     ob = {};
                     ob.name = childre[c].name.split(",")[0];
                     ob.title = childre[c].name.split(/,| - /)[1].trim();
+                    ob.hierarchyId = childre[c].hierarchyId;
                     result.push(ob);
                 }
                 
@@ -96,6 +110,7 @@ function search(str){
                         ob = {};
                         ob.name = childr[d].name.split(",")[0];
                         ob.title = childr[d].name.split(/,| - /)[1].trim();
+                        ob.hierarchyId = childr[d].hierarchyId;
                         result.push(ob);
                     }
                     
@@ -107,6 +122,7 @@ function search(str){
                             ob = {};
                             ob.name = child[e].name.split(",")[0];
                             ob.title = child[e].name.split(/,| - /)[1].trim();
+                            ob.hierarchyId = child[e].hierarchyId;
                             result.push(ob);
                         }
                         
@@ -118,6 +134,7 @@ function search(str){
                                 ob = {};
                                 ob.name = chil[f].name.split(",")[0];
                                 ob.title = chil[f].name.split(/,| - /)[1].trim();
+                                ob.hierarchyId = chil[f].hierarchyId;
                                 result.push(ob);
                             }
                             
@@ -129,6 +146,7 @@ function search(str){
                                     ob = {};
                                     ob.name = chi[g].name.split(",")[0];
                                     ob.title = chi[g].name.split(/,| - /)[1].trim();
+                                    ob.hierarchyId = chi[g].hierarchyId;
                                     result.push(ob);
                                 }
                                 
@@ -140,6 +158,7 @@ function search(str){
                                         ob = {};
                                         ob.name = ch[h].name.split(",")[0];
                                         ob.title = ch[h].name.split(/,| - /)[1].trim();
+                                        ob.hierarchyId = ch[h].hierarchyId;
                                         result.push(ob);
                                     }
                                     
@@ -151,6 +170,7 @@ function search(str){
                                             ob = {};
                                             ob.name = childrens[i].name.split(",")[0];
                                             ob.title = childrens[i].name.split(/,| - /)[1].trim();
+                                            ob.hierarchyId = childrens[i].hierarchyId;
                                             result.push(ob);
                                         }
                                     }
@@ -179,11 +199,29 @@ $data.load("orgChart.html", function(){
             res = search(req);
             $("div.search ul").empty();
             for(i = 0; i<res.length; i++){
-                $("div.search ul").append("<li><span class='name'>"+res[i].name+"</span><span class='title'>"+res[i].title+"</span></li>");
+                $("div.search ul").append("<li data-hierarchy-id='"+res[i].hierarchyId+"'><span class='name'>"+res[i].name+"</span><span class='title'>"+res[i].title+"</span></li>");
             }
         }else{
             $("div.search ul").empty();
         }
+    });
+    
+    $("div.panel div.search ul").on("click", "li", function(){
+        hierarchyId = $(this).data("hierarchyId").split(",");
+        console.log(hierarchyId);
+        //for(var i=0;i<hierarchyId.length;i++){
+        var i = 1;
+            
+        clock = setInterval(function(){
+            console.log("hey");
+            if(i<hierarchyId.length){
+                $("svg g[data-id='"+hierarchyId[i]+"']").d3Click();
+            }else{
+                clearInterval(clock);
+            }
+            i++
+        }, 1000);
+        //}
     });
     
     console.log($data);
@@ -191,102 +229,130 @@ $data.load("orgChart.html", function(){
     $data.find("a").remove();
     $data.children("div").children("ul").children("li").each(function(d, e){
         var hierarchy = [];
+        var hierarchyId = [];
         ob = {};
+        ob.id = counter();
         ob.name = $(e).text().trim();
         hierarchy[0] = ob.name;
+        hierarchyId[0] = ob.id;
         ob.hierarchy = hierarchy.slice(0,1);
+        ob.hierarchyId = hierarchyId.slice(0,1);
         ob.children = [];
         //ob.id
         $(e).children("ul").children("li").each(function(i, el){
             obj = {};
+            obj.id = counter();
             obj.name = $(el).text().trim();
             obj.children = [];
             hierarchy[1] = obj.name;
+            hierarchyId[1] = obj.id;
             obj.hierarchy = hierarchy.slice(0,2);
+            obj.hierarchyId = hierarchyId.slice(0,2);
+            
             
             $(el).children("ul").children("li").each(function(i, ele){
                 obje = {};
+                obje.id = counter();
                 obje.name = $(ele).text().trim();
                 obje.children = [];
                 hierarchy[2] = obje.name;
+                hierarchyId[2] = obje.id;
                 obje.hierarchy = hierarchy.slice(0,3);
+                obje.hierarchyId = hierarchyId.slice(0,3);
                 
                 $(ele).children("ul").children("li").each(function(i, elem){
                     objec = {};
+                    objec.id = counter();
                     objec.name = $(elem).text().trim();
                     objec.children = [];
                     hierarchy[3] = objec.name;
+                    hierarchyId[3] = objec.id;
                     objec.hierarchy = hierarchy.slice(0,4);
+                    objec.hierarchyId = hierarchyId.slice(0,4);
                     
                     $(elem).children("ul").children("li").each(function(i, eleme){
                         object = {};
+                        object.id = counter();
                         object.name = $(eleme).text().trim();
                         object.children = [];
                         hierarchy[4] = object.name;
+                        hierarchyId[4] = object.id;
                         object.hierarchy = hierarchy.slice(0,5);
+                        object.hierarchyId = hierarchyId.slice(0,5);
                         
                         $(eleme).children("ul").children("li").each(function(i, elemen){
                             objects = {};
+                            objects.id = counter();
                             objects.name = $(elemen).text().trim();
                             objects.children = [];
                             hierarchy[5] = objects.name;
-                            objects.hierarchy = hierarchy.slice(0,6);
+                            hierarchyId[5] = objects.id;
+                            objects.hierarchyId = hierarchyId.slice(0,6);
                             
                             $(elemen).children("ul").children("li").each(function(i, element){
                                 objectss = {};
+                                objectss.id = counter();
                                 objectss.name = $(element).text().trim();
                                 objectss.children = [];
                                 hierarchy[6] = objectss.name;
+                                hierarchyId[6] = objectss.id;
                                 objectss.hierarchy = hierarchy.slice(0,7);
+                                objectss.hierarchyId = hierarchyId.slice(0,7);
                                 
                                 $(element).children("ul").children("li").each(function(i, elements){
                                     objectsss = {};
+                                    objectsss.id = counter();
                                     objectsss.name = $(elements).text().trim();
                                     objectsss.children = [];
                                     hierarchy[7] = objectsss.name;
+                                    hierarchyId[7] = objectsss.id;
                                     objectsss.hierarchy = hierarchy.slice(0,8);
+                                    objectsss.hierarchyId = hierarchyId.slice(0,8);
                                     
                                     $(elements).children("ul").children("li").each(function(i, elementss){
                                         objectssss = {};
+                                        objectssss.id = counter();
                                         objectssss.name = $(elementss).text().trim();
                                         objectssss.children = [];
                                         hierarchy[8] = objectssss.name;
+                                        hierarchyId[8] = objectssss.id;
                                         objectssss.hierarchy = hierarchy.slice(0,9);
+                                        objectssss.hierarchyId = hierarchyId.slice(0,9);
                                         
                                         objectsss.children.push(objectssss);
-                                        counter();
+                                        //counter();
                                     });
                                     
                                     objectss.children.push(objectsss);
-                                    counter();
+                                    //counter();
                                 });
                                 
                                 objects.children.push(objectss);
-                                counter();
+                                //counter();
                             });
                             
                             object.children.push(objects);
-                            counter();
+                            //counter();
                         });
                         
                         objec.children.push(object);
-                        counter();
+                        //counter();
                     });
                     
                     obje.children.push(objec);
-                    counter();
+                    //counter();
                 });
                 
                 obj.children.push(obje);
-                counter();
+                //counter();
             });
             
             ob.children.push(obj);
-            counter();
+            //counter();
         });
         
         org.push(ob);
-        counter();
+        //counter();
     });
 
 //console.log(org);
@@ -310,12 +376,6 @@ $data.load("orgChart.html", function(){
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");*/
-
-    
-    
-
-    
-    
     
     //console.log(error);
     console.log(flare);
@@ -384,6 +444,9 @@ $data.load("orgChart.html", function(){
           .attr("transform", function(d) { 
               return "translate(" + source.y0 + "," + source.x0 + ")" 
           })
+          .attr("data-id", function(d) { 
+              return d.id; 
+            })
           .on('click', click);
 
         nodeEnter.append("circle")
