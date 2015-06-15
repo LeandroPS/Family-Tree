@@ -5,15 +5,27 @@
     <title>Family Tree</title>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,600' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="CSS/style.css"/>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script src="http://d3js.org/d3.v2.min.js?2.9.4"></script>
     <script src="JS/jquery.js"></script>
     <script src="JS/newjs.js"></script>
 </head>
 <body>
     <div class="panel">
-        <h1><strong>Purdue</strong> Hierarchical Chart</h1>
-        <svg class="org-chart">
-        </svg>
+        <h1>
+            <strong>Purdue</strong> Hierarchical Chart
+        </h1>
+        <div>
+            <svg class="org-chart" width="960" height="550"></svg>
+            <div class="search">
+                <input type="text" class="search" placeholder="Click and type to search">
+                <ul>
+
+                </ul>
+            </div>
+        </div>
+        <div class="hierarchy"></div>
     </div>
+    <button class="search"><span class="fa fa-search fa-2x"></span></button>
 </body>
 </html>

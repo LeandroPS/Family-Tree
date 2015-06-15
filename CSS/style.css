@@ -3,6 +3,7 @@ div.panel{
     top:50%;
     transform: translate(-50%, -50%);
     position: absolute;
+    overflow: hidden;
 }
 
     div.panel h1{
@@ -18,27 +19,121 @@ div.panel{
     div.panel svg{
         background-color: #F5F5F5;
     }
-
         
+    div.panel>div{
+        overflow: hidden;
+        position: relative;
+    }
 
+    div.panel div.search{
+        width: 300px;
+        height: 550px;
+        position: absolute;
+        top: 0px;
+        right: -300px;
+        /*background-color: rgba(255,255,255,0.7);*/
+        background-color: #EEEEEE;
+        transition: 1s;
+    }
+    
+        div.panel div.search.expanded{
+            right: 0px;
+        }
 
+        div.panel div.search input.search{
+            width: calc(100% - 20px);
+            height: 55px;
+            border: 0px;
+            background-color: rgba(255,255,255,0.85);
+            outline: none;
+            padding: 0px 10px;
+            font-size: 20px;
+            font-family: Open Sans, sans-serif;
+            
+        }
+
+        div.panel div.search ul{
+            padding: 0px;
+            margin: 0px;
+            /*overflow-y: scroll;*/
+        }
+
+            div.panel div.search ul li{
+                list-style: none;
+                padding: 5px 0px;
+            }
+
+                div.panel div.search ul li:hover{
+                    background-color: #E0E0E0;
+                    cursor: pointer;
+                }
+
+                div.panel div.search ul li span{
+                    display: block;
+                    font-family: Open Sans, sans-serif;
+                    margin-left: 10px;
+                }
+
+                div.panel div.search ul li span.name{
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+
+                div.panel div.search ul li span.title{
+                    font-size: 13px;
+                }
+
+    div.panel div.hierarchy{
+        float: right;
+        margin-right: 8px;
+    }
+        
+        div.panel div.hierarchy span.text{
+            font-family: Open Sans, sans-serif;
+            font-weight: 100;
+            margin-left: 5px;
+        }
+        
+        div.panel div.hierarchy span.text:not(:last-child){
+            margin-right: 5px;
+        }
+
+        div.panel div.hierarchy span.separator{
+            color: rgb(158, 158, 158);
+        }
+
+    button.search{
+        position: absolute;
+        top: calc(50% - 220px);
+        left: calc(50% + 509px);
+        transform: translate(-50%, -50%);
+        border: 0px;
+        background-color: transparent;
+        outline: none;
+        cursor: pointer;
+        color: rgb(158,158,158);
+    }
 
 text {
   font-family: "Helvetica Neue", Helvetica, sans-serif;
 }
 
-.name {
+/*.name {
   font-weight: bold;
 }
 
 .about {
   fill: #777;
   font-size: smaller;
-}
+}*/
 
 .link {
   fill: none;
   stroke: #E0E0E0;
     stroke-width: 2px;
   shape-rendering: crispEdges;
+}
+
+.button-search{
+    font-family: FontAwesome;
 }
