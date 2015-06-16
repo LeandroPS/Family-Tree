@@ -218,7 +218,7 @@ $data.load("orgChart.html", function(){
         var i = 1;
             
         clock = setInterval(function(){
-            console.log("hey");
+            //console.log("hey");
             if(i<hierarchyId.length){
                 $("svg g[data-id='"+hierarchyId[i]+"']").d3Click();
             }else{
@@ -463,7 +463,7 @@ $data.load("orgChart.html", function(){
         nodeEnter.append("text")
           .attr("x", function(d) { 
               //return d.children || d._children ? 10 : -10;
-              if(d.children!=null){
+              if(/*d.children!=null*/d.depth==0){
                   return -10;
               }else{
                   return 10;
@@ -472,7 +472,7 @@ $data.load("orgChart.html", function(){
           .attr("dy", ".35em")
           .attr("text-anchor", function(d) { 
             //return d.children || d._children ? "end" : "start";
-            if(d.children!=null){
+            if(/*d.children!=null*/d.depth==0){
                 return "end";
             }else{
                 return "start";
@@ -485,7 +485,7 @@ $data.load("orgChart.html", function(){
         nodeEnter.append("text")
           .attr("x", function(d) { 
               //return d.children || d._children ? 10 : -10;
-              if(d.children!=null){
+              if(/*d.children!=null*/d.depth==0){
                   return -10;
               }else{
                   return 10;
@@ -494,7 +494,7 @@ $data.load("orgChart.html", function(){
           .attr("dy", "1.35em")
           .attr("text-anchor", function(d) { 
             //return d.children || d._children ? "end" : "start";
-            if(d.children!=null){
+            if(/*d.children!=null*/d.depth==0){
                 return "end";
             }else{
                 return "start";
@@ -823,7 +823,14 @@ $data.load("orgChart.html", function(){
         update(d);
         $("div.hierarchy").empty();
         for(var i = 0; i<d.hierarchy.length; i++){
-            $("div.hierarchy").append("<span class='text'>"+d.hierarchy[i].split(",")[0]+"</span>");
+            text_span = jQuery("<span class='text' data-id='"+d.hierarchyId[i]+"'>"+d.hierarchy[i].split(",")[0]+"</span>").on("click", function(){
+                console.log(d.hierarchyId[i]);
+                console.log($(this).attr("data-id"));
+                $("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
+            });
+            
+            //$("div.hierarchy").append("<span class='text' data-id='"+d.hierarchyId[i]+"'>"+d.hierarchy[i].split(",")[0]+"</span>");
+            $("div.hierarchy").append(text_span);
             if(i<d.hierarchy.length-1){
                 $("div.hierarchy").append("<span class='fa fa-chevron-right separator'></span>");
             }

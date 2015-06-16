@@ -10,6 +10,7 @@ div.panel{
         font-family: Open Sans, sans-serif;
         font-weight: 100;
         margin-left: 8px;
+        margin-bottom: 8px;
     }
 
         div.panel h1 strong{
@@ -95,6 +96,11 @@ div.panel{
             font-weight: 100;
             margin-left: 5px;
         }
+            
+            div.panel div.hierarchy span.text:hover{
+                text-decoration: underline;
+                cursor: pointer;
+            }
         
         div.panel div.hierarchy span.text:not(:last-child){
             margin-right: 5px;
@@ -106,8 +112,8 @@ div.panel{
 
     button.search{
         position: absolute;
-        top: calc(50% - 220px);
-        left: calc(50% + 509px);
+        top: calc(50% - 225px);
+        left: calc(50% + 507px);
         transform: translate(-50%, -50%);
         border: 0px;
         background-color: transparent;
