@@ -209,6 +209,11 @@ $data.load("orgChart.html", function(){
     $("div.panel div.search ul").on("click", "li", function(){
         hierarchyId = $(this).data("hierarchyId").split(",");
         console.log(hierarchyId);
+        
+        root.children.forEach(collapse);
+        update(root);
+        
+        d3.select("g.main").transition().attr("transform","translate(0,0)");
         //for(var i=0;i<hierarchyId.length;i++){
         var i = 1;
             
