@@ -11,6 +11,7 @@ div.panel{
         font-weight: 100;
         margin-left: 8px;
         margin-bottom: 8px;
+        margin-top: 0px;
     }
 
         div.panel h1 strong{
@@ -28,7 +29,7 @@ div.panel{
 
     div.panel div.search{
         width: 300px;
-        height: 550px;
+        height: 750px;
         position: absolute;
         top: 0px;
         right: -300px;
@@ -112,9 +113,10 @@ div.panel{
 
     button.search{
         position: absolute;
-        top: calc(50% - 225px);
+        /*top: calc(50% - 225px);*/
+        top: 56px;
         left: calc(50% + 507px);
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, 0);
         border: 0px;
         background-color: transparent;
         outline: none;
