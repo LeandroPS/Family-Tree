@@ -1,17 +1,3 @@
-/*Array.prototype.clone = function() {
-	return this.slice(0);
-};
-
-function updateHierarchy(hi){
-    console.log(hi.length);
-    console.log(hi);
-    $("div.hierarchy").empty();
-    for(var i = 0; i<=hi.length; i++){
-        $("div.hierarchy").append("<span class='text'>"+hi[i]+"</span>");
-    }
-}
-*/
-
 jQuery.fn.d3Click = function () {
   this.each(function (i, e) {
     var evt = document.createEvent("MouseEvents");
@@ -23,32 +9,18 @@ jQuery.fn.d3Click = function () {
 
 var margin = {top: 20, right: 120, bottom: 20, left: 120},
     width = 960 - margin.right - margin.left,
-    //height = 800 - margin.top - margin.bottom;
-    height = 550 - margin.top - margin.bottom;
+    height = 750 - margin.top - margin.bottom;
     
 var i = 0,
     duration = 750,
     root;
 
 var tree = d3.layout.tree()
-        .size([height, width]);
-
-/*  var zoom = d3.behavior.zoom()
-        .scaleExtent([-2, 10])
-        .on("zoom", zoomed);
-    
-    var drag = d3.behavior.drag()
-        .origin(function(d) { return d; })
-        .on("dragstart", dragstarted)
-        .on("drag", dragged)
-        .on("dragend", dragended);*/
+        .size([height, width + margin.bottom + margin.top]);
 
     var svg;
     var diagonal = d3.svg.diagonal()
             .projection(function(d) { return [d.y, d.x]; });
-
-    //Toggle children on click.
-
 
 coun = 0;
 csearch = 0;
@@ -89,7 +61,6 @@ function search(str){
                 ob.hierarchyId = children[b].hierarchyId;
                 result.push(ob);
             }
-            //console.log(children[b]);
             var childre = children[b].children || children[b]._children;
             
             for(var c = 0; c < childre.length; c++){
@@ -190,7 +161,6 @@ $data.load("orgChart.html", function(){
     $("button.search").click(function(){
         $("div.search, button.search").toggleClass("expanded");
         $("button.search span").toggleClass("fa-search fa-times");
-        //$("input.search").delay(1000).focus();
     });
     
     $("input.search").keyup(function(){
@@ -214,11 +184,9 @@ $data.load("orgChart.html", function(){
         update(root);
         
         d3.select("g.main").transition().attr("transform","translate(0,0)");
-        //for(var i=0;i<hierarchyId.length;i++){
         var i = 1;
             
         clock = setInterval(function(){
-            //console.log("hey");
             if(i<hierarchyId.length){
                 $("svg g[data-id='"+hierarchyId[i]+"']").d3Click();
             }else{
@@ -226,12 +194,32 @@ $data.load("orgChart.html", function(){
             }
             i++
         }, 1000);
-        //}
     });
     
     console.log($data);
     //console.log("hey");
     $data.find("a").remove();
+    
+    /*
+    var pointer = $data.children("div").children("ul").children("li");
+    
+    if($(pointer).children("ul").children("li:not(.checked)")).size()!=0){
+        var hierarchy = [];
+        var hierarchyId = [];
+        ob = {};
+        ob.id = counter();
+        ob.name = $(pointer).text().trim();
+        hierarchy[0] = ob.name;
+        hierarchyId[0] = ob.id;
+        ob.hierarchy = hierarchy.slice(0,1);
+        ob.hierarchyId = hierarchyId.slice(0,1);
+        ob.children = [];
+    }
+    
+    */////
+    
+    
+    
     $data.children("div").children("ul").children("li").each(function(d, e){
         var hierarchy = [];
         var hierarchyId = [];
@@ -243,7 +231,7 @@ $data.load("orgChart.html", function(){
         ob.hierarchy = hierarchy.slice(0,1);
         ob.hierarchyId = hierarchyId.slice(0,1);
         ob.children = [];
-        //ob.id
+        
         $(e).children("ul").children("li").each(function(i, el){
             obj = {};
             obj.id = counter();
@@ -253,7 +241,6 @@ $data.load("orgChart.html", function(){
             hierarchyId[1] = obj.id;
             obj.hierarchy = hierarchy.slice(0,2);
             obj.hierarchyId = hierarchyId.slice(0,2);
-            
             
             $(el).children("ul").children("li").each(function(i, ele){
                 obje = {};
@@ -325,44 +312,32 @@ $data.load("orgChart.html", function(){
                                         objectssss.hierarchyId = hierarchyId.slice(0,9);
                                         
                                         objectsss.children.push(objectssss);
-                                        //counter();
                                     });
                                     
                                     objectss.children.push(objectsss);
-                                    //counter();
                                 });
                                 
                                 objects.children.push(objectss);
-                                //counter();
                             });
                             
                             object.children.push(objects);
-                            //counter();
                         });
                         
                         objec.children.push(object);
-                        //counter();
                     });
                     
                     obje.children.push(objec);
-                    //counter();
                 });
                 
                 obj.children.push(obje);
-                //counter();
             });
             
             ob.children.push(obj);
-            //counter();
         });
         
         org.push(ob);
-        //counter();
     });
 
-//console.log(org);
-
-//d3.json(/*"JS/Tree.json"*/org[0], function(flare, error) {
     flare = org[0];
     
     svg = d3.select("body div.panel svg")//.append("svg")
@@ -374,15 +349,6 @@ $data.load("orgChart.html", function(){
         .attr("transform","translate(0,0)")
         .attr("x", "0");//.call(zoom);
 
-    
-
-   /* var svg = d3.select("body").append("svg")
-        .attr("width", width + margin.right + margin.left)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");*/
-    
-    //console.log(error);
     console.log(flare);
     root = flare;
     root.x0 = height / 2;
@@ -399,7 +365,6 @@ $data.load("orgChart.html", function(){
     root.children.forEach(collapse);
     update(root);
     $("div.hierarchy").append("<span class='text'>"+org[0].name.split(",")[0]+"</span>");
-//});
 
     d3.select(self.frameElement).style("height", "800px");
 
@@ -421,12 +386,7 @@ $data.load("orgChart.html", function(){
     }
 
     function update(source) {
-        /*
-        $("button.search").click(function(){
-            $("div.search, button.search").toggleClass("expanded");
-            $("button.search span").toggleClass("fa-search fa-times");
-        });
-        */
+        
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
           links = tree.links(nodes);
@@ -463,7 +423,7 @@ $data.load("orgChart.html", function(){
         nodeEnter.append("text")
           .attr("x", function(d) { 
               //return d.children || d._children ? 10 : -10;
-              if(/*d.children!=null*/d.depth==0){
+              if(d.depth==0){
                   return -10;
               }else{
                   return 10;
@@ -472,7 +432,7 @@ $data.load("orgChart.html", function(){
           .attr("dy", ".35em")
           .attr("text-anchor", function(d) { 
             //return d.children || d._children ? "end" : "start";
-            if(/*d.children!=null*/d.depth==0){
+            if(d.depth==0){
                 return "end";
             }else{
                 return "start";
@@ -484,8 +444,7 @@ $data.load("orgChart.html", function(){
         
         nodeEnter.append("text")
           .attr("x", function(d) { 
-              //return d.children || d._children ? 10 : -10;
-              if(/*d.children!=null*/d.depth==0){
+              if(d.depth==0){
                   return -10;
               }else{
                   return 10;
@@ -493,8 +452,7 @@ $data.load("orgChart.html", function(){
           })
           .attr("dy", "1.35em")
           .attr("text-anchor", function(d) { 
-            //return d.children || d._children ? "end" : "start";
-            if(/*d.children!=null*/d.depth==0){
+            if(d.depth==0){
                 return "end";
             }else{
                 return "start";
@@ -564,238 +522,6 @@ $data.load("orgChart.html", function(){
             d.y0 = d.y;
         });
     }
-    /*
-    var search_panel = d3.select("body div.panel svg").append("g")
-        .attr("transform", "translate("+(width + margin.left + margin.right)+",0)")
-
-    var search_panel_rect = search_panel.append("rect")
-        .attr("width", 300)
-        .attr("height", height + margin.top + margin.bottom)
-        .style("fill","rgba(255,255,255,0.8)")
-        .style("stroke","none");
-    
-    var button_search = d3.select("body div.panel svg").append("g")
-        .attr("width", 30)
-        .attr("height", 30)
-        .attr("transform", "translate("+(width + margin.left + margin.right-45)+","+40+")");
-        //.attr("y", 15)
-        //.style("fill","#000")
-        //.style("stroke","none");
-    
-    var button_search_text = button_search.append("text")
-        .attr("class", "button-search")
-        .attr("font-family","FontAwesome")
-        .style("cursor","pointer")
-        .style("fill","#E0E0E0")
-        .attr('font-size', function(d) { return '30px';} )
-        .text(function(d) { return '\uf002'; })
-        .on("click", function(){
-            if(search_panel.attr("class") == "expanded"){
-                button_search_text.text('\uf002');
-            }else{
-                button_search_text.text('\uf00d');
-            }
-            search_panel.transition().duration(700)
-                .attr("transform", function(){
-                    if(search_panel.attr("class") == "expanded"){
-                        return "translate("+(width + margin.left + margin.right)+",0)";
-                        button_search_text.text('\uf002');
-                    }else{
-                        return "translate("+(width + margin.left + margin.right - 300)+",0)";
-                        button_search_text.text('\uf00d');
-                    }
-                })
-                .attr("class", function(){
-                    if(search_panel.attr("class") == "expanded"){
-                        return "";
-                    }else{
-                        return "expanded";
-                    }
-                });
-        });
-    
-    var keydown = function() {
-        if (!focused) return;
-        var text = focused.text;
-        var code = d3.event.keyCode;
-        if (code == 8) { // Backspace
-            d3.event.preventDefault();
-            text = text.substring(0,text.length-1);
-        };
-        if (code == 13) { // Enter
-            focused.stroke = d3.rgb(240,240,240);
-            focused.callback();
-        };
-        //console.log("keydown: code: "+ code + ", text: "+text);
-        focused.text = text;
-    }
-
-    var keypress = function() {
-        if (!focused) return;
-        var text = focused.text;
-        var code = d3.event.keyCode;
-        text = text+String.fromCharCode(code);
-        //console.log("keypress: code: "+ code + ", text: "+text);
-        focused.text = text;
-    }
-
-    var focused = null;
-    d3.select("body")
-        .on("keydown",keydown)
-        .on("keypress",keypress)
-        .on("click", function() {
-            if (focused) {
-                focused.stroke = d3.rgb(240,240,240);
-                focused = null;
-            }
-	});
-    /*
-    t = new Textbox(search_panel);
-
-    function Textbox(parent) {
-        var text = "text",
-            fontsize = 12,
-            x = 15,
-            y = 15,
-            width = 225,
-            height = 30,
-            stroke = d3.rgb(240,240,240),
-            fill = d3.rgb(255,255,255);
-        var textgroup = parent.append("g")
-            .attr("transform", "translate(" + x + "," + y + ")");
-        var rct = textgroup.append("rect")
-            .attr("width", width)
-            .attr("height", height)
-            .style("fill",fill)
-            .style("stroke-width","1px")
-            .style("stroke",stroke)
-            .style("opacity", 1);
-        var txt = textgroup.append("text")
-            .text(text)
-            .style("fill","black")
-            .style("font", fontsize+"px 'Open Sans, sans-serif'");
-        var cover = textgroup.append("rect") // Transparent cover to hide cursor when mousing over text
-            .attr("width", width)
-            .attr("height", height)
-            .style("opacity", 0);
-
-        var txt_width = txt.node().getComputedTextLength();
-        txt.attr("x",.5*(width-txt_width));
-        txt.attr("y",.5*(height+fontsize)-2);
-
-        var callback = function() {
-            console.log("Text: "+txt.text());
-        }
-
-        var aligntext = function() {
-            txt.attr("x",.5*(width-txt_width));
-            txt.attr("y",.5*(height+fontsize)-2);
-        };
-
-        function textbox() {
-        }
-
-        Object.defineProperty(textbox,"text",{
-            get: function() {return text;},
-            set: function(_) {
-                text = _;
-                txt.text(_);
-                txt_width = txt.node().getComputedTextLength();
-                aligntext();
-            },
-            enumerable: true,
-            cofigurable: true
-        });
-
-        Object.defineProperty(textbox,"x",{
-            get: function() {return x;},
-            set: function(_) {
-                x = _;
-                textgroup.attr("transform", "translate(" + x + "," + y + ")");
-            },
-            enumerable: true,
-            cofigurable: true
-        });
-            Object.defineProperty(textbox,"y",{
-            get: function() {return y;},
-            set: function(_) {
-                y = _;
-                textgroup.attr("transform", "translate(" + x + "," + y + ")");
-            },
-            enumerable: true,
-            cofigurable: true
-        });
-
-        Object.defineProperty(textbox,"width",{
-            get: function() {return width;},
-            set: function(_) {
-                width = _;
-                    rct.attr("width",_);
-                    cover.attr("width",_);
-                    aligntext();
-                },
-                enumerable: true,
-                cofigurable: true
-        });
-
-        Object.defineProperty(textbox,"height",{
-            get: function() {return height;},
-            set: function(_) {
-                height = _;
-                rct.attr("height",_);
-                cover.attr("height",_);
-                aligntext();
-            },
-            enumerable: true,
-            cofigurable: true
-        });
-
-        Object.defineProperty(textbox,"position",{
-            get: function() {return [x, y, width, height];},
-            set: function(_) {
-                textbox.x = _[0]; 
-                textbox.y = _[1];
-                textbox.width = _[2];
-                textbox.height = _[3];
-            },
-            enumerable: true,
-            cofigurable: true
-        })
-
-        Object.defineProperty(textbox,"stroke",{
-            get: function() {return stroke;},
-            set: function(_) {
-                stroke = _;
-                rct.style("stroke",stroke);
-            },
-            enumerable: true,
-            cofigurable: true
-        });
-
-        Object.defineProperty(textbox,"cover",{
-            get: function() {return cover;},
-            enumerable: true,
-            cofigurable: true
-        });
-
-        Object.defineProperty(textbox,"callback",{
-            get: function() {return callback;},
-            set: function(_) {
-                callback = _;
-            },
-            enumerable: true,
-            cofigurable: true
-        });
-
-        cover.on("click", function() {
-            focused = textbox;
-            rct.style("stroke","#347bbe");
-            d3.event.stopPropagation();
-        });
-
-        return textbox;
-    }
-    */
 
     function click(d) {
         console.log(d.hierarchy);
@@ -806,19 +532,15 @@ $data.load("orgChart.html", function(){
         if (d.children) {
             d._children = d.children;
             d.children = null;
-            //g._x = parseInt(g.attr("x"))+180;
-            //g._x = d.depth*(-180) + 180;
             g._x = (d.depth*(-300))+300
-            g.transition().attr("transform","translate("+g._x+","+0+") scale("+1+")");//.attr("x", g._x);
+            g.transition().attr("transform","translate("+g._x+","+0+") scale("+1+")");
             
         } else if (d._children!=null){
             d.children = d._children;
             d._children = null;
             
-            //g._x = parseInt(g.attr("x"))-180;
             g._x = d.depth*(-300) ;
-            //g._x = 0;
-            g.transition().attr("transform","translate("+(g._x)+","+0+") scale("+/*(d.depth*0.5+1)*/1+")");//.attr("x", g._x);
+            g.transition().attr("transform","translate("+(g._x)+","+0+") scale("+1+")");
         }
         update(d);
         $("div.hierarchy").empty();
@@ -829,7 +551,6 @@ $data.load("orgChart.html", function(){
                 $("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
             });
             
-            //$("div.hierarchy").append("<span class='text' data-id='"+d.hierarchyId[i]+"'>"+d.hierarchy[i].split(",")[0]+"</span>");
             $("div.hierarchy").append(text_span);
             if(i<d.hierarchy.length-1){
                 $("div.hierarchy").append("<span class='fa fa-chevron-right separator'></span>");
