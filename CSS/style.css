@@ -113,8 +113,8 @@ div.panel{
 
     button.search{
         position: absolute;
-        /*top: calc(50% - 225px);*/
-        top: 56px;
+        top: calc(50% - 362px);
+/*        top: 56px;*/
         left: calc(50% + 507px);
         transform: translate(-50%, 0);
         border: 0px;
