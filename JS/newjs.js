@@ -15,6 +15,28 @@ var i = 0,
     duration = 750,
     root;
 
+///
+var drag = d3.behavior.drag()
+    .origin(function(d) { return d; })
+    .on("dragstart", dragstarted)
+    .on("drag", dragged)
+    .on("dragend", dragended);
+
+function dragstarted(d) {
+  d3.event.sourceEvent.stopPropagation();
+  d3.select(this).classed("dragging", true);
+}
+
+function dragged(d) {
+  d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+}
+
+function dragended(d) {
+  d3.select(this).classed("dragging", false);
+}
+///
+
+
 var tree = d3.layout.tree()
         .size([height, width + margin.bottom + margin.top]);
 
@@ -217,8 +239,7 @@ $data.load("orgChart.html", function(){
     }
     
     */////
-    
-    
+
     
     $data.children("div").children("ul").children("li").each(function(d, e){
         var hierarchy = [];
@@ -279,6 +300,7 @@ $data.load("orgChart.html", function(){
                             objects.children = [];
                             hierarchy[5] = objects.name;
                             hierarchyId[5] = objects.id;
+                            objects.hierarchy = hierarchy.slice(0,6);
                             objects.hierarchyId = hierarchyId.slice(0,6);
                             
                             $(elemen).children("ul").children("li").each(function(i, element){
@@ -341,13 +363,15 @@ $data.load("orgChart.html", function(){
     flare = org[0];
     
     svg = d3.select("body div.panel svg")//.append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);//.call(zoom);
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .call(drag);//.call(zoom);
     
     svg = svg.append("g")
         .attr("class","main")
-        .attr("transform","translate(0,0)")
-        .attr("x", "0");//.call(zoom);
+        .attr("transform", "translate(" + margin.top + "," + margin.top + ")");
+        //.attr("x", "0")
+        //.call(drag);//.call(zoom);
 
     console.log(flare);
     root = flare;
@@ -412,12 +436,15 @@ $data.load("orgChart.html", function(){
           .attr("data-id", function(d) { 
               return d.id; 
             })
+          .attr("data-depth", function(d) { 
+              return d.depth; 
+          })
           .on('click', click);
 
         nodeEnter.append("circle")
           .attr("r", 1e-6)
           .style("fill", function(d) { 
-            return d._children ? "lightsteelblue" : "#fff"; 
+                return d._children ? "lightsteelblue" : "#fff"; 
             });
 
         nodeEnter.append("text")
@@ -533,14 +560,14 @@ $data.load("orgChart.html", function(){
             d._children = d.children;
             d.children = null;
             g._x = (d.depth*(-300))+300
-            g.transition().attr("transform","translate("+g._x+","+0+") scale("+1+")");
+            g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
             
         } else if (d._children!=null){
             d.children = d._children;
             d._children = null;
             
             g._x = d.depth*(-300) ;
-            g.transition().attr("transform","translate("+(g._x)+","+0+") scale("+1+")");
+            g.transition().attr("transform","translate("+(g._x)+","+margin.top+") scale("+1+")");
         }
         update(d);
         $("div.hierarchy").empty();
@@ -548,7 +575,14 @@ $data.load("orgChart.html", function(){
             text_span = jQuery("<span class='text' data-id='"+d.hierarchyId[i]+"'>"+d.hierarchy[i].split(",")[0]+"</span>").on("click", function(){
                 console.log(d.hierarchyId[i]);
                 console.log($(this).attr("data-id"));
-                $("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
+                
+                var o = d3.select("svg g[data-id='"+$(this).attr("data-id")+"']")
+                //$("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
+                o.children = o._children || o.children;
+                o._children = null;
+
+                g._x = ((o.attr("data-depth"))*(-300));
+                g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
             });
             
             $("div.hierarchy").append(text_span);
@@ -557,5 +591,6 @@ $data.load("orgChart.html", function(){
             }
         }
     }
+    
     
 });
