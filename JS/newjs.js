@@ -34,11 +34,17 @@ function dragged(d) {
 function dragended(d) {
   d3.select(this).classed("dragging", false);
 }
+
+//var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
 ///
 
 
-var tree = d3.layout.tree()
-        .size([height, width + margin.bottom + margin.top]);
+/*var tree = d3.layout.tree()
+        .nodeSize([20,10]);
+        //.size([height, width + margin.bottom + margin.top])
+        */
+var tree = d3.layout.tree().nodeSize([70, 40]);
+        
 
     var svg;
     var diagonal = d3.svg.diagonal()
@@ -97,17 +103,17 @@ function search(str){
                 
                 var childr = childre[c].children || childre[c]._children;
                 
-                for(var d = 0; d < childr.length; d++){
+                for(var de = 0; de < childr.length; de++){
                     counterSearch();
-                    if(childr[d].name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
+                    if(childr[de].name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
                         ob = {};
-                        ob.name = childr[d].name.split(",")[0];
-                        ob.title = childr[d].name.split(/,| - /)[1].trim();
-                        ob.hierarchyId = childr[d].hierarchyId;
+                        ob.name = childr[de].name.split(",")[0];
+                        ob.title = childr[de].name.split(/,| - /)[1].trim();
+                        ob.hierarchyId = childr[de].hierarchyId;
                         result.push(ob);
                     }
                     
-                    var child = childr[d].children || childr[d]._children;
+                    var child = childr[de].children || childr[de]._children;
                     
                     for(var e = 0; e < child.length; e++){
                         counterSearch();
@@ -362,12 +368,18 @@ $data.load("orgChart.html", function(){
 
     flare = org[0];
     
-    svg = d3.select("body div.panel svg")//.append("svg")
+    function zoom() {
+        svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+    
+    var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
+    
+    svgM = d3.select("body div.panel svg")//.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .call(drag);//.call(zoom);
+        .call(zoomListener);//.call(zoom);
     
-    svg = svg.append("g")
+    svg = svgM.append("g")
         .attr("class","main")
         .attr("transform", "translate(" + margin.top + "," + margin.top + ")");
         //.attr("x", "0")
@@ -388,10 +400,12 @@ $data.load("orgChart.html", function(){
 
     root.children.forEach(collapse);
     update(root);
+    centerNode(root);
     $("div.hierarchy").append("<span class='text'>"+org[0].name.split(",")[0]+"</span>");
 
     d3.select(self.frameElement).style("height", "800px");
-
+    
+    /*
     function zoomed() {
       svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
@@ -408,13 +422,14 @@ $data.load("orgChart.html", function(){
     function dragended(d) {
       d3.select(this).classed("dragging", false);
     }
-
+*/
     function update(source) {
         
         // Compute the new tree layout.
         var nodes = tree.nodes(root).reverse(),
-          links = tree.links(nodes);
+            links = tree.links(nodes);
 
+        //centerNode(root);
         // Normalize for fixed-depth.
         nodes.forEach(function(d) { 
             d.y = d.depth * 300 +200; 
@@ -550,6 +565,19 @@ $data.load("orgChart.html", function(){
         });
     }
 
+    function centerNode(source) {
+        scale = zoomListener.scale();
+        x = -source.y0;
+        y = -source.x0;
+        x = x * scale + width / 2;
+        y = y * scale + height / 2;
+        d3.select('g').transition()
+            .duration(duration)
+            .attr("transform", "translate(" + x + "," + y + ")scale(" + scale + ")");
+        zoomListener.scale(scale);
+        zoomListener.translate([x, y]);
+    }
+    
     function click(d) {
         console.log(d.hierarchy);
         console.log("foi");
@@ -559,15 +587,17 @@ $data.load("orgChart.html", function(){
         if (d.children) {
             d._children = d.children;
             d.children = null;
-            g._x = (d.depth*(-300))+300
-            g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
+            /*g._x = (d.depth*(-300))+300
+            g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");*/
+            centerNode(d);
             
         } else if (d._children!=null){
             d.children = d._children;
             d._children = null;
             
-            g._x = d.depth*(-300) ;
-            g.transition().attr("transform","translate("+(g._x)+","+margin.top+") scale("+1+")");
+            /*g._x = d.depth*(-300) ;
+            g.transition().attr("transform","translate("+(g._x)+","+margin.top+") scale("+1+")");*/
+            centerNode(d);
         }
         update(d);
         $("div.hierarchy").empty();
@@ -582,7 +612,7 @@ $data.load("orgChart.html", function(){
                 o._children = null;
 
                 g._x = ((o.attr("data-depth"))*(-300));
-                g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
+               // g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
             });
             
             $("div.hierarchy").append(text_span);
