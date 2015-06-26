@@ -78,7 +78,7 @@ function search(str){
             result.push(ob);
         }
         
-        children = org[a].children || org[a]._children;
+        children = org[a].children || org[a]._children || [];
         
         for(var b = 0; b<children.length; b++){
             counterSearch();
@@ -89,7 +89,7 @@ function search(str){
                 ob.hierarchyId = children[b].hierarchyId;
                 result.push(ob);
             }
-            var childre = children[b].children || children[b]._children;
+            var childre = children[b].children || children[b]._children || [];
             
             for(var c = 0; c < childre.length; c++){
                 counterSearch();
@@ -101,7 +101,7 @@ function search(str){
                     result.push(ob);
                 }
                 
-                var childr = childre[c].children || childre[c]._children;
+                var childr = childre[c].children || childre[c]._children || [];
                 
                 for(var de = 0; de < childr.length; de++){
                     counterSearch();
@@ -113,19 +113,19 @@ function search(str){
                         result.push(ob);
                     }
                     
-                    var child = childr[de].children || childr[de]._children;
-                    
-                    for(var e = 0; e < child.length; e++){
+                    var child = childr[de].children || childr[de]._children || [];
+                    //console.log(child);
+                    for(var em = 0; em < child.length; em++){
                         counterSearch();
-                        if(child[e].name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
+                        if(child[em].name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
                             ob = {};
-                            ob.name = child[e].name.split(",")[0];
-                            ob.title = child[e].name.split(/,| - /)[1].trim();
-                            ob.hierarchyId = child[e].hierarchyId;
+                            ob.name = child[em].name.split(",")[0];
+                            ob.title = child[em].name.split(/,| - /)[1].trim();
+                            ob.hierarchyId = child[em].hierarchyId;
                             result.push(ob);
                         }
                         
-                        var chil = child[e].children || child[e]._children;
+                        var chil = child[em].children || child[em]._children || [];
                         
                         for(var f = 0; f < chil.length; f++){
                             counterSearch();
@@ -137,7 +137,7 @@ function search(str){
                                 result.push(ob);
                             }
                             
-                            var chi = chil[f].children || chil[f]._children;
+                            var chi = chil[f].children || chil[f]._children || [];
                             
                             for(var g = 0; g < chi.length; g++){
                                 counterSearch();
@@ -149,7 +149,7 @@ function search(str){
                                     result.push(ob);
                                 }
                                 
-                                var ch = chi[g].children || chi[g]._children;
+                                var ch = chi[g].children || chi[g]._children || [];
                                 
                                 for(var h = 0; h < ch.length; h++){
                                     counterSearch();
@@ -161,7 +161,7 @@ function search(str){
                                         result.push(ob);
                                     }
                                     
-                                    var childrens = ch[h].children || ch[h]._children;
+                                    var childrens = ch[h].children || ch[h]._children || [];
                                     
                                     for(var i = 0; i < childrens.length; i++){
                                         counterSearch();
@@ -187,8 +187,14 @@ function search(str){
 $data.load("orgChart.html", function(){
     
     $("button.search").click(function(){
+        $("div.search input.search").delay(1000).focus();
+        $("div.not-scrollable").scrollLeft(0);
         $("div.search, button.search").toggleClass("expanded");
         $("button.search span").toggleClass("fa-search fa-times");
+        /*setInterval(function(){
+            
+        }, 1000);*/
+        
     });
     
     $("input.search").keyup(function(){
@@ -589,30 +595,35 @@ $data.load("orgChart.html", function(){
             d.children = null;
             /*g._x = (d.depth*(-300))+300
             g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");*/
-            centerNode(d);
+            //centerNode(d);
             
         } else if (d._children!=null){
-            d.children = d._children;
+            d.children = d._children || [] ;
             d._children = null;
             
             /*g._x = d.depth*(-300) ;
             g.transition().attr("transform","translate("+(g._x)+","+margin.top+") scale("+1+")");*/
-            centerNode(d);
+            //centerNode(d);
         }
         update(d);
         $("div.hierarchy").empty();
         for(var i = 0; i<d.hierarchy.length; i++){
             text_span = jQuery("<span class='text' data-id='"+d.hierarchyId[i]+"'>"+d.hierarchy[i].split(",")[0]+"</span>").on("click", function(){
-                console.log(d.hierarchyId[i]);
+                //console.log(d.hierarchyId[i]);
                 console.log($(this).attr("data-id"));
+                //alert("bla");
                 
-                var o = d3.select("svg g[data-id='"+$(this).attr("data-id")+"']")
+                var o = d3.select("svg g[data-id='"+$(this).attr("data-id")+"']");
+                $("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
+                //o.d3Click();
                 //$("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
-                o.children = o._children || o.children;
-                o._children = null;
-
-                g._x = ((o.attr("data-depth"))*(-300));
-               // g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
+                
+                //o.children = o._children || o.children;
+                //o._children = null;
+                
+                //centerNode(o);
+                //g._x = ((o.attr("data-depth"))*(-300));
+                //g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
             });
             
             $("div.hierarchy").append(text_span);
@@ -620,6 +631,7 @@ $data.load("orgChart.html", function(){
                 $("div.hierarchy").append("<span class='fa fa-chevron-right separator'></span>");
             }
         }
+        centerNode(d);
     }
     
     
