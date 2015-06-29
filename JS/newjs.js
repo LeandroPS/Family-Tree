@@ -66,6 +66,29 @@ $data = jQuery("<div></div>");
 
 org = [];
 
+function search(str) {
+    var result = [];
+    var ind = 0;
+    function sear(e){
+        if(e.name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
+            ob = {};
+            ob.name = e.name.split(",")[0];
+            ob.title = e.name.split(/,| - /)[1].trim();
+            ob.hierarchyId = e.hierarchyId;
+            result.push(ob);
+        }
+        if (e.children) {     
+            e.children.forEach(sear);
+        }else if(e._children){
+            e._children.forEach(sear);
+        }
+    }
+    sear(root);
+    console.log("hoy "+ind);
+    return result;
+    
+}
+/*
 function search(str){
     var result = [];
     for(var a = 0; a<org.length; a++){
@@ -183,7 +206,7 @@ function search(str){
     }
     return result;
 }
-
+*/
 $data.load("orgChart.html", function(){
     
     $("button.search").click(function(){
@@ -401,6 +424,14 @@ $data.load("orgChart.html", function(){
             d._children = d.children;
             d._children.forEach(collapse);
             d.children = null;
+        }
+    }
+    
+    function unCollapse(d) {
+        if (d._children) {
+            d.children = d._children;
+            d.children.forEach(unCollapse);
+            d._children = null;
         }
     }
 
