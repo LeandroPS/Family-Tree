@@ -68,7 +68,6 @@ org = [];
 
 function search(str) {
     var result = [];
-    var ind = 0;
     function sear(e){
         if(e.name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
             ob = {};
@@ -84,9 +83,7 @@ function search(str) {
         }
     }
     sear(root);
-    console.log("hoy "+ind);
-    return result;
-    
+    return result;  
 }
 /*
 function search(str){
@@ -273,9 +270,48 @@ $data.load("orgChart.html", function(){
         ob.children = [];
     }
     
-    */////
-
+    *////
+    /*
+    $data.children("div").children("ul").children("li").each(function(d, e){
+        var hierarchy = [];
+        var hierarchyId = [];
+        function reg(e){
+            obj = {};
+            obj.id = counter();
+            obj.name = $(el).text().trim();
+            obj.children = [];
+            hierarchy[1] = obj.name;
+            hierarchyId[1] = obj.id;
+            obj.hierarchy = hierarchy.slice(0,2);
+            obj.hierarchyId = hierarchyId.slice(0,2);
+            if (e.children("ul").children("li").size()>0) {     
+                e.children("ul").children("li").forEach(reg);
+            }
+        }
+        
+    });
     
+    function search(str) {
+        var result = [];
+        function sear(e){
+            if(e.name.split(",")[0].toLowerCase().indexOf(str.toLowerCase())!= -1){
+                ob = {};
+                ob.name = e.name.split(",")[0];
+                ob.title = e.name.split(/,| - /)[1].trim();
+                ob.hierarchyId = e.hierarchyId;
+                result.push(ob);
+            }
+            if (e.children) {     
+                e.children.forEach(sear);
+            }else if(e._children){
+                e._children.forEach(sear);
+            }
+        }
+        sear(root);
+        console.log("hoy "+ind);
+        return result;  
+    }
+    */
     $data.children("div").children("ul").children("li").each(function(d, e){
         var hierarchy = [];
         var hierarchyId = [];
@@ -439,6 +475,77 @@ $data.load("orgChart.html", function(){
     update(root);
     centerNode(root);
     $("div.hierarchy").append("<span class='text'>"+org[0].name.split(",")[0]+"</span>");
+    
+    card = svgM.append("g")
+        .attr("class", "card")
+        .attr("height", 100)
+        .attr("transform", "translate(15,635)")
+        .style("opacity", "1");
+
+    cont = card.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("rx", 5)
+        .attr("ry", 5)
+        .attr("width", 250)
+        .attr("height", 100)
+        .attr("fill", "rgba(255,255,255,0.7)");
+        //.attr("fill", "green");
+
+    card.append("text")
+        .attr("x", 10)
+        .attr("y", 22)
+        .attr("text-anchor", "start")
+        .text(org[0].name.split(",")[0])
+        .style("fill-opacity", 1)
+        .style('font-family', 'Open Sans')
+        .style("font-size", "11pt")
+        .style("fill", "#000")
+        .style("font-weight", "bold")
+        .style("cursor", "pointer");
+
+    card.append("text")
+        .attr("x", 10)
+        .attr("y", 40)
+        .attr("text-anchor", "start")
+        .text(org[0].name.split(/,| - /)[1])
+        .style("fill-opacity", 1)
+        .style("font-size", "9.5pt")
+        .style("fill", "grey")
+        .style("cursor", "pointer");
+
+    card.append("text")
+        .attr("x", 10)
+        .attr("y", 72)
+        .attr("width", 10)
+        .attr("text-anchor", "start")
+        .style('font-family', 'FontAwesome')
+        .style('font-size', "12px" )
+        .text('\uf095');
+
+    card.append("text")
+        .attr("x", 10)
+        .attr("y", 89)
+        .attr("text-anchor", "start")
+        .style('font-family', 'FontAwesome')
+        .style('font-size', "12px" )
+        .text('\uf003');
+
+    card.append("text")
+        .attr("x", 28)
+        .attr("y", 72)
+        .attr("text-anchor", "start")
+        .style('font-family', 'Open Sans')
+        .style('font-size', "12px" )
+        .text('(206) 222 2222');
+
+    card.append("text")
+        .attr("x", 28)
+        .attr("y", 89)
+        .attr("text-anchor", "start")
+        .style('font-family', 'Open Sans')
+        .style('font-size', "12px" )
+        .text('leandro.pires.souza@outlook.com');
 
     d3.select(self.frameElement).style("height", "800px");
     
@@ -621,40 +728,110 @@ $data.load("orgChart.html", function(){
         
         g = d3.select("svg g");
         
+        if(card!=null){
+            var old_card = d3.select("svg g.card");
+
+            card.transition().duration(1000)
+                .attr("transform", "translate(15,670)")
+                .style("opacity","0");
+        }
+        card = svgM.append("g")
+            .attr("class", "card")
+            .attr("height", 100)
+            .attr("transform", "translate(15,670)")
+            .style("opacity", "0");
+        
+        card.transition()
+            .duration(1000)
+            .attr("transform", "translate(15,635)")
+            .style("opacity", "1");
+            /*.attr("x", 15)
+            .attr("y", height - 200);*/
+        
+        cont = card.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("rx", 5)
+            .attr("ry", 5)
+            .attr("width", 250)
+            .attr("height", 100)
+            .attr("fill", "rgba(255,255,255,0.7)");
+            //.attr("fill", "green");
+        
+        card.append("text")
+          .attr("x", 10)
+          .attr("y", 22)
+          .attr("text-anchor", "start")
+          .text(d.name.split(",")[0])
+          .style("fill-opacity", 1)
+          .style('font-family', 'Open Sans')
+          .style("font-size", "11pt")
+          .style("fill", "#000")
+          .style("font-weight", "bold")
+          .style("cursor", "pointer");
+        
+        card.append("text")
+          .attr("x", 10)
+          .attr("y", 40)
+          .attr("text-anchor", "start")
+          .text(d.name.split(/,| - /)[1])
+          .style("fill-opacity", 1)
+          .style("font-size", "9.5pt")
+          .style("fill", "grey")
+          .style("cursor", "pointer");
+        
+        card.append("text")
+          .attr("x", 10)
+          .attr("y", 72)
+          .attr("width", 10)
+          .attr("text-anchor", "start")
+          .style('font-family', 'FontAwesome')
+          .style('font-size', "12px" )
+          .text('\uf095');
+        
+        card.append("text")
+          .attr("x", 10)
+          .attr("y", 89)
+          .attr("text-anchor", "start")
+          .style('font-family', 'FontAwesome')
+          .style('font-size', "12px" )
+          .text('\uf003');
+        
+        card.append("text")
+          .attr("x", 28)
+          .attr("y", 72)
+          .attr("text-anchor", "start")
+          .style('font-family', 'Open Sans')
+          .style('font-size', "12px" )
+          .text('(206) 222 2222');
+        
+        card.append("text")
+          .attr("x", 28)
+          .attr("y", 89)
+          .attr("text-anchor", "start")
+          .style('font-family', 'Open Sans')
+          .style('font-size', "12px" )
+          .text('leandro.pires.souza@outlook.com');
+        
+        //cont.attr("width", function(){});
+        
         if (d.children) {
             d._children = d.children;
-            d.children = null;
-            /*g._x = (d.depth*(-300))+300
-            g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");*/
-            //centerNode(d);
-            
+            d.children = null;    
         } else if (d._children!=null){
             d.children = d._children || [] ;
             d._children = null;
-            
-            /*g._x = d.depth*(-300) ;
-            g.transition().attr("transform","translate("+(g._x)+","+margin.top+") scale("+1+")");*/
-            //centerNode(d);
         }
+        
         update(d);
+        
         $("div.hierarchy").empty();
         for(var i = 0; i<d.hierarchy.length; i++){
             text_span = jQuery("<span class='text' data-id='"+d.hierarchyId[i]+"'>"+d.hierarchy[i].split(",")[0]+"</span>").on("click", function(){
-                //console.log(d.hierarchyId[i]);
                 console.log($(this).attr("data-id"));
-                //alert("bla");
                 
                 var o = d3.select("svg g[data-id='"+$(this).attr("data-id")+"']");
                 $("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
-                //o.d3Click();
-                //$("svg g[data-id='"+$(this).attr("data-id")+"']").d3Click();
-                
-                //o.children = o._children || o.children;
-                //o._children = null;
-                
-                //centerNode(o);
-                //g._x = ((o.attr("data-depth"))*(-300));
-                //g.transition().attr("transform","translate("+g._x+","+margin.top+") scale("+1+")");
             });
             
             $("div.hierarchy").append(text_span);
